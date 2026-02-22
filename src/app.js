@@ -32,6 +32,10 @@ app.use('/api/v1/reports', reportRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
+    console.error("--- SERVER ERROR DETECTED ---");
+    console.error(err); // This will print the filename and line number to the terminal
+    console.error("-----------------------------");
+
     res.status(err.statusCode || 500).json({
         success: false,
         message: err.message || 'Internal Server Error'

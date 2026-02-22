@@ -11,12 +11,12 @@ const protect = (roles = []) => {
         }
 
         try {
-            console.log("JWT Catch Block Triggered:", err.message);
+            // REMOVED the line referencing 'err.message' here
             console.log("Token being checked:", token.substring(0, 10) + "...");
+            
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = decoded; // Contains id, role (e.g., 'registrar'), and name
+            req.user = decoded; 
 
-            // Role-Based Access Control (RBAC)
             if (roles.length && !roles.includes(req.user.role)) {
                 const error = new Error(`Role ${req.user.role} is not authorized to access this route`);
                 error.statusCode = 403;
