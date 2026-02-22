@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const jwt = require('jsonwebtoken');
 const studentRoutes = require('./routes/studentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -22,8 +23,8 @@ app.post('/api/v1/auth/test-login', (req, res) => {
     res.json({ token });
 });
 
-// Register the Student Routes
 app.use('/api/v1/students', studentRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
