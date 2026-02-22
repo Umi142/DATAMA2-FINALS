@@ -6,7 +6,7 @@ const updateStudentGrade = async (req, res, next) => {
     const performer = req.user?.name || 'Unknown Performer';
 
     try {
-        await GradeModel.updateGrade(fullname, courseCode, rawGrade);
+        await GradeModel.updateGrade({ fullname, courseCode, rawGrade });
 
         await AuditModel.logAction({
             action: 'GRADE_UPDATE_SUCCESS',
