@@ -1,24 +1,19 @@
 const { getMongoDb } = require('../config/db');
 
 const AuditModel = {
-    logAction: async (actionData) => {
+    logAction: async (data) => {
         try {
             const db = getMongoDb();
-            const collection = db.collection('audit_logs');
+            const auditCollection = db.collection('audit_logs');
             
-            const entry = {
-                timestamp: new Date(),
-                action: actionData.action,
-                performedBy: actionData.user || 'system_admin',
-                details: actionData.details,
-                status: actionData.status, // 'SUCCESS' or 'FAILURE'
-                errorMessage: actionData.errorMessage || null,
-                ipAddress: actionData.ip || 'internal'
+            const logEntry = {
+                ...data,
+                timestamp: new Date() // Automatically add the time of the log
             };
 
-            await collection.insertOne(entry);
+            await auditCollection.insertOne(logEntry);
         } catch (err) {
-            console.error('⚠️ Black Box Critical Failure:', err.message);
+            console.error("Black Box Logging Error:", err);
         }
     }
 };

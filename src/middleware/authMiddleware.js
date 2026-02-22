@@ -11,6 +11,8 @@ const protect = (roles = []) => {
         }
 
         try {
+            console.log("JWT Catch Block Triggered:", err.message);
+            console.log("Token being checked:", token.substring(0, 10) + "...");
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = decoded; // Contains id, role (e.g., 'registrar'), and name
 
@@ -23,6 +25,9 @@ const protect = (roles = []) => {
 
             next();
         } catch (err) {
+            console.log("--- AUTH DEBUGGER ---");
+            console.log("Error Name:", err.name);
+            console.log("Error Message:", err.message);
             next(err);
         }
     };
