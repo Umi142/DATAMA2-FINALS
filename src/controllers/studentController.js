@@ -43,4 +43,28 @@ const addStudent = async (req, res, next) => {
     }
 };
 
-module.exports = { addStudent };
+const getStudentTranscript = async (req, res, next) => {
+    const { id } = req.params; // Get ID from the URL: /students/2026-001/transcript
+    const performer = req.user?.name || 'Unknown User';
+
+    try {
+        const transcript = await StudentModel.getTranscripts(id);
+
+        // Log that a transcript was accessed
+        await AuditModel.logAction({
+            action: 'VIEW_TRANSCRIPT',
+            user: performer,
+            details: { viewed_student_id: id },
+            status: 'SUCCESS'
+        });
+
+        res.status(200).json({
+            success: true,
+            data: transcript
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+module.exports = { addStudent, getStudentTranscript };

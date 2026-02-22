@@ -3,7 +3,7 @@ const { mysqlPool } = require('../config/db');
 const StudentModel = {
     /**
      * Calls the AddStudent stored procedure.
-     * SQL Reference: CREATE PROCEDURE AddStudent (ID_Number, lastName, firstName, Section) [cite: 34]
+     * SQL Reference: CREATE PROCEDURE AddStudent (ID_Number, lastName, firstName, Section)
      */
     create: async (studentData) => {
         const { id_number, lastName, firstName, section } = studentData;
@@ -18,11 +18,18 @@ const StudentModel = {
 
     /**
      * Fetches the transcript view.
-     * SQL Reference: CREATE VIEW studentTranscripts 
+     * SQL Reference: CREATE VIEW studentTranscripts
+     * If id_number is provided, filter by that student.
      */
-    getTranscripts: async () => {
-        const [rows] = await mysqlPool.execute('SELECT * FROM studentTranscripts');
-        return rows;
+    getTranscripts: async (id_number = null) => {
+        if (id_number) {
+            const query = `SELECT * FROM studentTranscripts WHERE ID_Number = ?`;
+            const [rows] = await mysqlPool.execute(query, [id_number]);
+            return rows;
+        } else {
+            const [rows] = await mysqlPool.execute('SELECT * FROM studentTranscripts');
+            return rows;
+        }
     }
 };
 
