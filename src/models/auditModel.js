@@ -1,19 +1,27 @@
 const { getMongoDb } = require('../config/db');
 
 const AuditModel = {
-    logAction: async (data) => {
+    logAction: async (category, data) => {
         try {
             const db = getMongoDb();
-            const auditCollection = db.collection('audit_logs');
+            
+            // Mapping categories to specific collection names
+            const collections = {
+                enrollment: 'enrollment_logs',
+                grade: 'grade_logs',
+                system: 'system_logs'
+            };
+
+            const collectionName = collections[category] || 'general_logs';
             
             const logEntry = {
                 ...data,
-                timestamp: new Date() // Automatically add the time of the log
+                timestamp: new Date()
             };
 
-            await auditCollection.insertOne(logEntry);
+            await db.collection(collectionName).insertOne(logEntry);
         } catch (err) {
-            console.error("Black Box Logging Error:", err);
+            console.error(`Logging Error [${category}]:`, err);
         }
     }
 };

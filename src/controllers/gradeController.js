@@ -3,27 +3,28 @@ const AuditModel = require('../models/auditModel');
 
 const updateStudentGrade = async (req, res, next) => {
     const { fullname, courseCode, rawGrade } = req.body;
-    const performer = req.user?.name || 'Unknown Performer';
+    const performer = req.user?.username || 'Unknown Performer';
 
     try {
         await GradeModel.updateGrade({ fullname, courseCode, rawGrade });
 
-        await AuditModel.logAction({
-            action: 'GRADE_UPDATE_SUCCESS',
-            user: performer,
-            details: { fullname, courseCode, rawGrade },
-            status: 'SUCCESS'
+        await AuditModel.logAction('grade', {
+            performer,
+            action: 'UPDATE_GRADE',
+            status: 'SUCCESS',
+            student: fullname,
+            course: courseCode,
+            grade: rawGrade
         });
 
         res.status(200).json({ success: true, message: `Grade updated for ${fullname}` });
     } catch (err) {
-        // Logs the SQL error message (e.g., "Invalid Grade Input") to MongoDB
-        await AuditModel.logAction({
+        await AuditModel.logAction('grade', {
+            performer,
             action: 'GRADE_UPDATE_FAILED',
-            user: performer,
-            details: { fullname, courseCode, rawGrade },
             status: 'FAILURE',
-            errorMessage: err.message 
+            errorMessage: err.message,
+            details: { fullname, courseCode, rawGrade }
         });
         next(err);
     }
